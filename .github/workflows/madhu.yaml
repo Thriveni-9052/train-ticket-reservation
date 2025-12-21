@@ -105,6 +105,6 @@ jobs:
           USER: ${{ secrets.TOMCAT_USER_PROD }}
           PASS: ${{ secrets.TOMCAT_PASS_PROD }}
         run: |
-          WAR_FILE=$(ls *.war)
+          WAR_FILE=$(ls *.war | head -n 1)
           curl -u "$USER:$PASS" -T "$WAR_FILE" \
           "$URL/deploy?path=/train-ticket-reservation&update=true"
