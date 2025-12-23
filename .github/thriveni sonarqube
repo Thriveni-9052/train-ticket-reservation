@@ -1,5 +1,4 @@
 
-      kkkkk
 name: ci/cd pipeline to deploy to nexus artifact
 on:
  push:
