@@ -1,1 +1,40 @@
+name: Java CI with Maven & SonarQube
 
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Maven validate
+        run: mvn validate
+
+      - name: Maven compile
+        run: mvn compile
+
+      - name: Maven test
+        run: mvn test
+
+      - name: Maven package
+        run: mvn package
+
+      - name: SonarQube code quality
+        run: |
+          mvn clean verify sonar:sonar \
+            -Dsonar.projectKey=train-ticket \
+            -Dsonar.host.url="${{ secrets.SONAR_HOST }}" \
+            -Dsonar.login="${{ secrets.SONAR_TOKEN }}"
