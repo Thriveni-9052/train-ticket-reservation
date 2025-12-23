@@ -25,4 +25,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn clean install -DskipTests sonar:sonar \
           -Dsonar.projectKey=train-ticket-reservation \
-          -Dsonar.host.url=http://54.255.245.181:9000 
+          -Dsonar.host.url=http://54.255.245.181:9000 \
+               -Dsonar.login=${SONAR_TOKEN}
+               
