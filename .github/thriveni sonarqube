@@ -1,4 +1,5 @@
 
+      kkkkk
 name: ci/cd pipeline to deploy to nexus artifact
 on:
  push:
@@ -24,7 +25,17 @@ jobs:
         run: mvn package  
       - name:sonarqube code quality
          run: |
-         |
+             mvn clean verify sonar:sonar \
+             -Dsonar.projectkey=train-ticket\
+             -Dsonar.host.url="${{ secrets.SONAR_HOST}}"
+             -Dsonar.login="${{ secrets.SONAR_TOKEN }}"
+
+        
+
+
+
+
+
         
 
       
