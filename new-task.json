@@ -1,0 +1,31 @@
+{
+  "family": "train-ticket-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::014044354871:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::014044354871:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "train-ticket",
+      "image": "014044354871.dkr.ecr.us-west-1.amazonaws.com/train-ticket:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/train-ticket",
+          "awslogs-region": "us-west-1",
+          "awslogs-stream-prefix": "train-ticket"
+        }
+      }
+    }
+  ]
+}
