@@ -1,4 +1,4 @@
-name: CI/CD Pipeline to Deploy to Tomcat
+name: CI/CD Pipeline to Deploy Tomcat App to ECS
 
 on:
   push:
@@ -6,25 +6,30 @@ on:
       - master
 
 jobs:
-  build-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
+    # 1️⃣ Checkout Source Code
     - name: Checkout Code
       uses: actions/checkout@v3
 
+    # 2️⃣ Setup Java
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
         distribution: temurin
         java-version: '17'
 
-    - name: Build project with Maven
+    # 3️⃣ Build WAR using Maven
+    - name: Build Application (WAR)
       run: mvn clean package -DskipTests
 
+    # 4️⃣ Verify WAR file
     - name: Verify WAR file
       run: ls -lh target/
 
+    # 5️⃣ Configure AWS Credentials
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -32,24 +37,38 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
+    # 6️⃣ Login to Amazon ECR
     - name: Login to Amazon ECR
       uses: aws-actions/amazon-ecr-login@v2
 
-    - name: Build, Tag & Push Docker Image
+    # 7️⃣ Build, Tag & Push Docker Image to ECR
+    - name: Build & Push Docker Image
       run: |
         ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
         IMAGE_TAG=$(date +%s)
         ECR_URI=$ACCOUNT_ID.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}
 
+        echo "Building Docker image..."
         docker build -t $ECR_URI:$IMAGE_TAG .
+
+        echo "Pushing image to Amazon ECR..."
         docker push $ECR_URI:$IMAGE_TAG
 
         echo "IMAGE_URI=$ECR_URI:$IMAGE_TAG" >> $GITHUB_ENV
 
+    # 8️⃣ Render ECS Task Definition with New Image
+    - name: Update ECS Task Definition
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ecs-task-def.json
+        container-name: tomcat-container
+        image: ${{ env.IMAGE_URI }}
+
+    # 9️⃣ Deploy to Amazon ECS
     - name: Deploy to Amazon ECS
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
       with:
-        task-definition: new-task.json
+        task-definition: ecs-task-def.json
         service: ${{ secrets.ECS_SERVICE }}
         cluster: ${{ secrets.ECS_CLUSTER }}
         wait-for-service-stability: true
