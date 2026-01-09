@@ -22,7 +22,7 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/train-ticket",
-          "awslogs-region": "us-west-1",
+          "awslogs-region": "ap-south-1",
           "awslogs-stream-prefix": "train-ticket"
         }
       }
