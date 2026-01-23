@@ -1,15 +1,4 @@
-FROM tomcat:9.0-jdk17
-
-# Default Tomcat apps remove cheyyadam
-RUN rm -rf /usr/local/tomcat/webapps/*
-
-# Mee WAR file copy (ROOT context)
-COPY target/*.war /usr/local/tomcat/webapps/ROOT.war
-
-# Tomcat default port
-EXPOSE 8080
-
-# Tomcat foreground lo run avvali (ECS ki MUST)
-CMD ["catalina.sh", "run"]
-
-
+FROM tomcat:8-jre8
+LABEL maintainer="thriveni" version="v1.0.0"
+RUN mkdir thriveni
+COPY 
