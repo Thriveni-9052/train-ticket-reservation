@@ -51,9 +51,9 @@ jobs:
 
       - name: Tag Docker Image
         run: |
-          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          docker tag ${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
-            $ACCOUNT_ID.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+         ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+         docker tag ${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
+         $ACCOUNT_ID.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
       - name: Push to ECR
         run: |
